@@ -1,0 +1,4 @@
+Django
+djangorestframework
+drfpasswordless-gstr169
+PyJWT

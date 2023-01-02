@@ -14,8 +14,17 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path
+from django.urls import include, path
+from drfpasswordless.settings import api_settings
+
+from .views import ObtainEmailWhiteListCallbackToken, ObtainJWTFromCallbackToken, VerifyJWT
 
 urlpatterns = [
+    path(api_settings.PASSWORDLESS_AUTH_PREFIX,
+         VerifyJWT.as_view(), name='verify_jwt_token'),
+    path(api_settings.PASSWORDLESS_AUTH_PREFIX + 'jwt/',
+         ObtainJWTFromCallbackToken.as_view(), name='auth_jwt_token'),
+    path(api_settings.PASSWORDLESS_AUTH_PREFIX + 'email/',
+         ObtainEmailWhiteListCallbackToken.as_view(), name='auth_email_token'),
     path('admin/', admin.site.urls),
 ]

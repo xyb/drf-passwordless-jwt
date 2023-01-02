@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.1/ref/settings/
 """
 
+from os import getenv
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -20,12 +21,18 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-yhe(15ptdmm(cbczejzf4x-h)f!=b$vyfw@68+t2y6i_ic!(w@'
+SECRET_KEY = getenv(
+    'DJANGO_SECRET_KEY',
+    'django-insecure-yhe(15ptdmm(cbczejzf4x-h)f!=b$vyfw@68+t2y6i_ic!(w@',
+)
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = bool(int(getenv('DJANGO_DEBUG', 1)))
 
-ALLOWED_HOSTS = []
+if getenv('DJANGO_ALLOWED_HOSTS'):
+    ALLOWED_HOSTS = getenv('DJANGO_ALLOWED_HOSTS').split(',')
+else:
+    ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -37,7 +44,48 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'rest_framework',
+    'rest_framework.authtoken',
+    'drfpasswordless',
 ]
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.TokenAuthentication',
+    ],
+}
+
+PASSWORDLESS_AUTH = {
+    'PASSWORDLESS_AUTH_TYPES': ['EMAIL'],
+    'PASSWORDLESS_EMAIL_NOREPLY_ADDRESS': getenv('OTP_EMAIL_ADDRESS', 'xyb@mydomain.com'),
+    'PASSWORDLESS_TOKEN_EXPIRE_TIME': int(getenv('OTP_TOKEN_EXPIRE_SECONDS', 5 * 60)),
+}
+if getenv('OTP_EMAIL_SUBJECT'):
+    PASSWORDLESS_AUTH['PASSWORDLESS_EMAIL_SUBJECT'] = getenv('OTP_EMAIL_SUBJECT')
+if getenv('OTP_EMAIL_PLAINTEXT'):
+    PASSWORDLESS_AUTH['PASSWORDLESS_EMAIL_PLAINTEXT_MESSAGE'] = getenv('OTP_EMAIL_PLAINTEXT')
+if getenv('OTP_EMAIL_HTML'):
+    PASSWORDLESS_AUTH['PASSWORDLESS_EMAIL_TOKEN_HTML_TEMPLATE_NAME'] = getenv('OTP_EMAIL_HTML')
+
+if getenv('EMAIL_BACKEND_TEST'):
+    EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+else:
+    EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_USE_SSL = bool(int(getenv('EMAIL_USE_SSL', 0)))
+EMAIL_USE_TLS = bool(int(getenv('EMAIL_USE_TLS', 0)))
+EMAIL_HOST = getenv('EMAIL_HOST', 'smtp.mydomain.com')
+EMAIL_HOST_USER = getenv('EMAIL_HOST_USER', 'xyb@mydomain.com')
+EMAIL_HOST_PASSWORD = getenv('EMAIL_HOST_PASSWORD', 'password')
+EMAIL_PORT = int(getenv('EMAIL_PORT', 465))
+EMAIL_FROM = getenv('EMAIL_FROM', 'xyb@mydomain.com')
+EMAIL_TIMEOUT = int(getenv('EMAIL_TIMEOUT', 3))
+EMAIL_WHITE_LIST = getenv('EMAIL_WHITE_LIST', r'.*')
+EMAIL_WHITE_LIST_MESSAGE = getenv('EMAIL_WHITE_LIST_MESSAGE',
+                                  'email address not in white list')
+
+JWT_SECRET = getenv('JWT_SECRET', 'your secret key')
+JWT_EXPIRE_SECONDS = int(getenv('JWT_EXPIRE_SECONDS', 60 * 60 * 24 * 30))
+
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -54,7 +102,7 @@ ROOT_URLCONF = 'drf_passwordless_jwt.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [BASE_DIR / 'templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -75,10 +123,21 @@ WSGI_APPLICATION = 'drf_passwordless_jwt.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': getenv('DB_ENGINE', 'django.db.backends.sqlite3'),
+        'NAME': getenv('DB_NAME', BASE_DIR / 'db.sqlite3'),
+        'USER': getenv('DB_USER', 'postgres'),
+        'PASSWORD': getenv('DB_PASSWORD', ''),
+        'HOST': getenv('DB_HOST', ''),
+        'PORT': getenv('DB_PORT', ''),
     }
 }
+if 'mysql' in DATABASES['default']['ENGINE']:
+    DATABASES['default']['OPTIONS'] = {
+        # fix mysql error 1452
+        "init_command": "SET foreign_key_checks = 0;",
+        # fix mysql emoji issue
+        'charset': 'utf8mb4',
+    }
 
 
 # Password validation
