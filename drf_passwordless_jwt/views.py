@@ -1,16 +1,19 @@
+from datetime import timedelta
+
 import jwt
-from drfpasswordless.views import ObtainAuthTokenFromCallbackToken
+from django.conf import settings
+from django.core.validators import RegexValidator
+from django.utils import timezone
+from drfpasswordless.models import CallbackToken
+from drfpasswordless.serializers import EmailAuthSerializer
+from drfpasswordless.views import (ObtainAuthTokenFromCallbackToken,
+                                   ObtainEmailCallbackToken)
 from rest_framework import serializers, status
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from .utils import decode_jwt, generate_jwt
-
-from drfpasswordless.views import ObtainEmailCallbackToken
-from drfpasswordless.serializers import EmailAuthSerializer
-from django.conf import settings
-from django.core.validators import RegexValidator
 
 
 class EmailAuthWhiteListSerializer(EmailAuthSerializer):
@@ -33,6 +36,13 @@ class ObtainJWTFromCallbackToken(ObtainAuthTokenFromCallbackToken):
         token = generate_jwt(email)
         resp.data['email'] = email
         resp.data['token'] = token
+
+        current_time = timezone.now()
+        remove_time = current_time - timedelta(
+            seconds=settings.OTP_TOKEN_CLEAN_SECONDS)
+        tokens = CallbackToken.objects.filter(created_at__lt=remove_time)
+        tokens.delete()
+
         return resp
 
 

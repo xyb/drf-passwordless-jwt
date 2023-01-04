@@ -71,6 +71,8 @@ if getenv('OTP_EMAIL_PLAINTEXT'):
 if getenv('OTP_EMAIL_HTML'):
     PASSWORDLESS_AUTH['PASSWORDLESS_EMAIL_TOKEN_HTML_TEMPLATE_NAME'] = getenv('OTP_EMAIL_HTML')
 
+OTP_TOKEN_CLEAN_SECONDS = int(getenv('OTP_TOKEN_CLEAN_SECONDS', 60 * 60 * 30))
+
 if getenv('EMAIL_BACKEND_TEST'):
     EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 else:
