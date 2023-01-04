@@ -47,6 +47,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework.authtoken',
     'drfpasswordless',
+    'corsheaders',
 ]
 
 REST_FRAMEWORK = {
@@ -86,8 +87,13 @@ EMAIL_WHITE_LIST_MESSAGE = getenv('EMAIL_WHITE_LIST_MESSAGE',
 JWT_SECRET = getenv('JWT_SECRET', 'your secret key')
 JWT_EXPIRE_SECONDS = int(getenv('JWT_EXPIRE_SECONDS', 60 * 60 * 24 * 30))
 
+if getenv('CORS_ALLOWED_ORIGINS'):
+    CORS_ALLOWED_ORIGINS = getenv('CORS_ALLOWED_ORIGINS').split(',')
+elif getenv('CORS_ALLOW_ALL_ORIGINS'):
+    CORS_ALLOW_ALL_ORIGINS = True
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -157,7 +163,6 @@ AUTH_PASSWORD_VALIDATORS = [
         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
 ]
-
 
 # Internationalization
 # https://docs.djangoproject.com/en/4.1/topics/i18n/
