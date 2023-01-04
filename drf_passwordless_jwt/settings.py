@@ -38,6 +38,7 @@ else:
 # Application definition
 
 INSTALLED_APPS = [
+    'authuser',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -49,6 +50,8 @@ INSTALLED_APPS = [
     'drfpasswordless',
     'corsheaders',
 ]
+
+AUTH_USER_MODEL = 'authuser.User'
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
