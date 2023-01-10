@@ -129,3 +129,5 @@ dmypy.json
 .pyre/
 
 *.sqlite3
+staticfiles
+*env

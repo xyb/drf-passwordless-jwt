@@ -3,3 +3,4 @@ djangorestframework
 drfpasswordless-gstr169
 PyJWT
 django-cors-headers
+whitenoise
