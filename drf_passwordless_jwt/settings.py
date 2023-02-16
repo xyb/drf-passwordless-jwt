@@ -72,7 +72,9 @@ if getenv('OTP_EMAIL_PLAINTEXT'):
 if getenv('OTP_EMAIL_HTML'):
     PASSWORDLESS_AUTH['PASSWORDLESS_EMAIL_TOKEN_HTML_TEMPLATE_NAME'] = getenv('OTP_EMAIL_HTML')
 
-OTP_TOKEN_CLEAN_SECONDS = int(getenv('OTP_TOKEN_CLEAN_SECONDS', 60 * 60 * 30))
+OTP_TOKEN_CLEAN_SECONDS = int(getenv('OTP_TOKEN_CLEAN_SECONDS', 3600 * 24 * 30))
+JWT_EXPIRE_SECONDS = int(getenv('JWT_EXPIRE_SECONDS', 3600 * 24 * 30))
+JWT_SECRET = getenv('JWT_SECRET', 'a long long secret string')
 
 if getenv('EMAIL_BACKEND_TEST'):
     EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
@@ -89,9 +91,8 @@ EMAIL_TIMEOUT = int(getenv('EMAIL_TIMEOUT', 3))
 EMAIL_WHITE_LIST = getenv('EMAIL_WHITE_LIST', r'.*')
 EMAIL_WHITE_LIST_MESSAGE = getenv('EMAIL_WHITE_LIST_MESSAGE',
                                   'email address not in white list')
-
-JWT_SECRET = getenv('JWT_SECRET', 'your secret key')
-JWT_EXPIRE_SECONDS = int(getenv('JWT_EXPIRE_SECONDS', 60 * 60 * 24 * 30))
+EMAIL_TEST_ACCOUNT_PREFIX = getenv('EMAIL_TEST_ACCOUNT_PREFIX',
+                                   'EMAIL_TEST_ACCOUNT_')
 
 if getenv('CORS_ALLOWED_ORIGINS'):
     CORS_ALLOWED_ORIGINS = getenv('CORS_ALLOWED_ORIGINS').split(',')

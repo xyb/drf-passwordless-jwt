@@ -12,17 +12,31 @@ from rest_framework.views import APIView
 
 from .utils import generate_jwt
 from .serializers import EmailAuthWhiteListSerializer, JWTSerializer
+from .testaccount import get_test_account_token, exists_test_account
 
 
 class ObtainEmailTokenView(ObtainEmailCallbackToken):
     serializer_class = EmailAuthWhiteListSerializer
+    def post(self, request, *args, **kwargs):
+        email = request.data['email']
+        if exists_test_account(email):
+            return Response({'detail':
+                             f'test account email {email!r} available'})
+
+        return super(ObtainEmailTokenView, self).post(request, *args, **kwargs)
 
 
 class ObtainJWTView(ObtainAuthTokenFromCallbackToken):
     def post(self, request, *args, **kwargs):
         email = request.data['email']
-        resp = super(ObtainJWTView, self).post(request, *args,
-                                                            **kwargs)
+        if exists_test_account(email):
+            if request.data['token'] == get_test_account_token(email):
+                return Response({
+                    'email': email,
+                    'token': generate_jwt(email),
+                })
+
+        resp = super(ObtainJWTView, self).post(request, *args, **kwargs)
         token = generate_jwt(email)
         resp.data['email'] = email
         resp.data['token'] = token
@@ -41,6 +55,13 @@ class VerifyJWTView(APIView):
     serializer_class = JWTSerializer
 
     def post(self, request, *args, **kwargs):
+        email = request.data['email']
+        if exists_test_account(email):
+            return Response({
+                'email': email,
+                'exp': '9999-12-31T23:59:59',
+            })
+
         serializer = self.serializer_class(data=request.data,
                                            context={'request': request})
         if serializer.is_valid(raise_exception=False):
