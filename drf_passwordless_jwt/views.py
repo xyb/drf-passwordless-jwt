@@ -55,8 +55,8 @@ class VerifyJWTView(APIView):
     serializer_class = JWTSerializer
 
     def post(self, request, *args, **kwargs):
-        email = request.data['email']
-        if exists_test_account(email):
+        email = request.data.get('email')
+        if email and exists_test_account(email):
             return Response({
                 'email': email,
                 'exp': '9999-12-31T23:59:59',
