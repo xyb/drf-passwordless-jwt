@@ -1,19 +1,29 @@
 # drf-passwordless-jwt
 
-`drf-passwordless-jwt` is a JWT passwordless authentication service
-for the Django REST framework.
+`drf-passwordless-jwt` is a RESTful API service that offers passwordless
+authentication using JWT. In other words, it's a Single Sign-On (SSO)
+service that allows users to log in without using a password.
+
+## Features
+- Email login token
+- Obtain JWT token
+- Verify JWT token
+- Dummy accounts used for development and testing purposes.
 
 ## Usage
 
 ```sh
+# Email login token
 $ curl -X POST -d "email=xyb@test.com" localhost:8000/auth/email/
 {"detail":"A login token has been sent to your email."}
 
 Enter this token to sign in: 527389
 
+# Obtain JWT token
 $ curl -X POST -d "email=xyb@test.com&token=527389" localhost:8000/auth/jwt/
 {"token":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6Inh5YkB0ZXN0LmNvbSIsImV4cCI6MTY3NTI2Njg0NH0.a7RgJLEbeFSQeFZ93qjC2iHo_wabglwzBZ9fe9D-rfw","email":"xyb@test.com"}
 
+# Verify JWT token
 $ curl -X POST -d "token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6Inh5YkB0ZXN0LmNvbSIsImV4cCI6MTY3NTI2Njg0NH0.a7RgJLEbeFSQeFZ93qjC2iHo_wabglwzBZ9fe9D-rfw" \
   localhost:8000/auth/
 {"email":"xyb@test.com","exp":"2023-02-01T15:54:04Z"}
@@ -23,6 +33,26 @@ It uses [Django REST framework](https://www.django-rest-framework.org/),
 so you can also access this interface through your browser.
 
 ![](drf.webp)
+
+## Dummy accounts
+
+During development and testing, you may want to use dummy accounts to
+save time. To do this, you can configure environment variables.
+For example, if you want to use the email address a@a.com to log in,
+you can set the environment variable:
+```sh
+$ export EMAIL_TEST_ACCOUNT_a_at_a_com=123456
+```
+
+Then, you can use the command:
+```sh
+$ curl -X POST -d "email=a@a.com&token=123456" localhost:8000/auth/jwt/
+```
+
+to directly obtain a JWT token without having to first obtain a login
+token via email. This way, you can cut out the step of first getting
+a login token via email, and immediately receive a JWT token.
+This hack could save you significant time.
 
 ## Configuration
 
@@ -80,6 +110,9 @@ EMAIL_WHITE_LIST = r'.*'
 
 # message on rejection
 EMAIL_WHITE_LIST_MESSAGE = 'unacceptable email address'
+
+# dummy account env prefix
+EMAIL_TEST_ACCOUNT_PREFIX = 'EMAIL_TEST_ACCOUNT_'
 
 # specify hosts separeated by commas
 CORS_ALLOWED_ORIGINS = ''
