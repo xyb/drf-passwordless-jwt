@@ -26,8 +26,18 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
 
-      - run: pip install -r requirements.txt
+      - run: pip install -r requirements-test.txt
 
       - name: run tests
         run: |
-          python manage.py test
+          make coverage
+
+      - name: Send coverage report to codecov
+        uses: codecov/codecov-action@v3
+        with:
+          file: ./coverage.xml
+
+      - name: Send coverage report to codeclimate
+        uses: paambaati/codeclimate-action@v3.2.0
+        env:
+          CC_TEST_REPORTER_ID: ${{secrets.CC_TEST_REPORTER_ID}}
