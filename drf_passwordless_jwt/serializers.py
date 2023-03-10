@@ -3,6 +3,8 @@ from django.core.validators import RegexValidator
 from drfpasswordless.serializers import EmailAuthSerializer
 from rest_framework import serializers
 
+import jwt
+
 from .utils import decode_jwt
 
 
@@ -20,6 +22,6 @@ class JWTSerializer(serializers.Serializer):
     def validate_token(self, value):
         try:
             value = decode_jwt(value)
-        except jwt.ExpiredSignatureError:
-            raise serializers.ValidationError('token expired')
+        except jwt.exceptions.PyJWTError:
+            raise serializers.ValidationError
         return value
