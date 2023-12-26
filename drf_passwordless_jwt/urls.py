@@ -17,7 +17,7 @@ from django.contrib import admin
 from django.urls import include, path
 from drfpasswordless.settings import api_settings
 
-from .views import ObtainEmailTokenView, ObtainJWTView, VerifyJWTView
+from .views import ObtainEmailTokenView, ObtainJWTView, VerifyJWTView, VerifyJWTHeaderView
 
 urlpatterns = [
     path(api_settings.PASSWORDLESS_AUTH_PREFIX,
@@ -26,5 +26,7 @@ urlpatterns = [
          ObtainJWTView.as_view(), name='auth_jwt_token'),
     path(api_settings.PASSWORDLESS_AUTH_PREFIX + 'email/',
          ObtainEmailTokenView.as_view(), name='auth_email_token'),
+    path(api_settings.PASSWORDLESS_AUTH_PREFIX + 'header/',
+         VerifyJWTHeaderView.as_view(), name='verify_jwt_token_header'),
     path('admin/', admin.site.urls),
 ]

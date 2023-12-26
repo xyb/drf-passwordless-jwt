@@ -119,3 +119,23 @@ class TaskTest(APITestCase):
         )
 
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+    @patch.dict(os.environ, {"EMAIL_TEST_ACCOUNT_a_at_a_com": "123456"})
+    def test_verify_jwt_token_header(self):
+        response = self.client.post(
+            reverse("auth_jwt_token"),
+            {"email": "a@a.com", "token": "123456"},
+            format="json",
+        )
+        token = response.json()["token"]
+
+        response = self.client.post(
+            reverse("verify_jwt_token_header"),
+            HTTP_AUTHORIZATION=f"Bearer {token}",
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        json = response.json()
+        self.assertEqual(list(json.keys()), ["email", "exp"])
+        self.assertEqual(json["email"], "a@a.com")
