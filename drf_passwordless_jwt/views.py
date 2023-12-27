@@ -90,16 +90,13 @@ class VerifyJWTHeaderView(APIView):
 
         email = request.headers.get('email')
 
-        if not email:
-            return Response(status=status.HTTP_400_BAD_REQUEST, data={'error': 'Email must be provided in headers'})
-
-        if exists_test_account(email):
+        if email and exists_test_account(email):
             return Response({
                 'email': email,
                 'exp': '9999-12-31T23:59:59',
             })
 
-        serializer = self.serializer_class(data={'token': token, 'email': email}, context={'request': request})
+        serializer = self.serializer_class(data={'token': token}, context={'request': request})
         if serializer.is_valid(raise_exception=False):
             return Response(
                 serializer.validated_data['token'],
