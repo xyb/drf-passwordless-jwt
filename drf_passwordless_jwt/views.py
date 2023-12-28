@@ -10,6 +10,7 @@ from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
+from .consts import LONG_LIVE_TIME
 from .utils import generate_jwt
 from .serializers import EmailAuthWhiteListSerializer, JWTSerializer
 from .testaccount import get_test_account_token, exists_test_account
@@ -59,7 +60,7 @@ class VerifyJWTView(APIView):
         if email and exists_test_account(email):
             return Response({
                 'email': email,
-                'exp': '9999-12-31T23:59:59',
+                'exp': LONG_LIVE_TIME,
             })
 
         serializer = self.serializer_class(data=request.data,
@@ -82,7 +83,7 @@ class VerifyJWTHeaderView(APIView):
 
         if not authorization_header:
             return Response(
-                status=status.HTTP_400_BAD_REQUEST,
+                status=status.HTTP_401_UNAUTHORIZED,
                 data={"error": "Authorization header must be provided"},
             )
 
@@ -90,7 +91,7 @@ class VerifyJWTHeaderView(APIView):
             _, token = authorization_header.split()
         except ValueError:
             return Response(
-                status=status.HTTP_400_BAD_REQUEST,
+                status=status.HTTP_401_UNAUTHORIZED,
                 data={"error": "Invalid Authorization header format"},
             )
 
@@ -99,7 +100,7 @@ class VerifyJWTHeaderView(APIView):
             return Response(
                 {
                     "email": email,
-                    "exp": "9999-12-31T23:59:59",
+                    "exp": LONG_LIVE_TIME,
                 },
             )
 

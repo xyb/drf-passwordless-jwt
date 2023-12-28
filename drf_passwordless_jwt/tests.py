@@ -139,3 +139,29 @@ class TaskTest(APITestCase):
         json = response.json()
         self.assertEqual(list(json.keys()), ["email", "exp"])
         self.assertEqual(json["email"], "a@a.com")
+
+    def test_invalid_jwt_token_header(self):
+        response = self.client.post(
+            reverse("verify_jwt_token_header"),
+            HTTP_AUTHORIZATION="Bearer badbeef",
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+    def test_wrong_format_jwt_token_header(self):
+        response = self.client.post(
+            reverse("verify_jwt_token_header"),
+            HTTP_AUTHORIZATION="badbeef",
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+    def test_missing_jwt_token_header(self):
+        response = self.client.post(
+            reverse("verify_jwt_token_header"),
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
