@@ -27,6 +27,11 @@ $ curl -X POST -d "email=xyb@test.com&token=527389" localhost:8000/auth/jwt/
 $ curl -X POST -d "token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6Inh5YkB0ZXN0LmNvbSIsImV4cCI6MTY3NTI2Njg0NH0.a7RgJLEbeFSQeFZ93qjC2iHo_wabglwzBZ9fe9D-rfw" \
   localhost:8000/auth/
 {"email":"xyb@test.com","exp":"2023-02-01T15:54:04Z"}
+
+# or verify via http header
+$ curl -X POST -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6Inh5YkB0ZXN0LmNvbSIsImV4cCI6MTY3NTI2Njg0NH0.a7RgJLEbeFSQeFZ93qjC2iHo_wabglwzBZ9fe9D-rfw" \
+  localhost:8000/auth/header/
+{"email":"xyb@test.com","exp":"2023-02-01T15:54:04Z"}
 ```
 
 It uses [Django REST framework](https://www.django-rest-framework.org/),
