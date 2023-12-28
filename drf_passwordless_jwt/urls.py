@@ -14,19 +14,34 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import include, path
+from django.urls import path
 from drfpasswordless.settings import api_settings
 
-from .views import ObtainEmailTokenView, ObtainJWTView, VerifyJWTView, VerifyJWTHeaderView
+from .views import ObtainEmailTokenView
+from .views import ObtainJWTView
+from .views import VerifyJWTHeaderView
+from .views import VerifyJWTView
 
 urlpatterns = [
-    path(api_settings.PASSWORDLESS_AUTH_PREFIX,
-         VerifyJWTView.as_view(), name='verify_jwt_token'),
-    path(api_settings.PASSWORDLESS_AUTH_PREFIX + 'jwt/',
-         ObtainJWTView.as_view(), name='auth_jwt_token'),
-    path(api_settings.PASSWORDLESS_AUTH_PREFIX + 'email/',
-         ObtainEmailTokenView.as_view(), name='auth_email_token'),
-    path(api_settings.PASSWORDLESS_AUTH_PREFIX + 'header/',
-         VerifyJWTHeaderView.as_view(), name='verify_jwt_token_header'),
-    path('admin/', admin.site.urls),
+    path(
+        api_settings.PASSWORDLESS_AUTH_PREFIX,
+        VerifyJWTView.as_view(),
+        name="verify_jwt_token",
+    ),
+    path(
+        api_settings.PASSWORDLESS_AUTH_PREFIX + "jwt/",
+        ObtainJWTView.as_view(),
+        name="auth_jwt_token",
+    ),
+    path(
+        api_settings.PASSWORDLESS_AUTH_PREFIX + "email/",
+        ObtainEmailTokenView.as_view(),
+        name="auth_email_token",
+    ),
+    path(
+        api_settings.PASSWORDLESS_AUTH_PREFIX + "header/",
+        VerifyJWTHeaderView.as_view(),
+        name="verify_jwt_token_header",
+    ),
+    path("admin/", admin.site.urls),
 ]

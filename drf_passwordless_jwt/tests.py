@@ -31,13 +31,13 @@ class TaskTest(APITestCase):
         )
         self.assertEqual(len(mail.outbox), 1)
         msg = mail.outbox[0]
-        self.assertEqual(msg.subject, 'Your Login Token')
-        self.assertTrue(msg.body.startswith('Enter this token to sign in:'))
+        self.assertEqual(msg.subject, "Your Login Token")
+        self.assertTrue(msg.body.startswith("Enter this token to sign in:"))
         token = msg.body.split()[-1]
         self.assertEqual(len(token), 6)
         self.assertTrue(token.isdigit())
-        self.assertEqual(msg.from_email, 'xyb@mydomain.com')
-        self.assertEqual(msg.to, ['xyb@test.com'])
+        self.assertEqual(msg.from_email, "xyb@mydomain.com")
+        self.assertEqual(msg.to, ["xyb@test.com"])
 
     def test_invalid_email(self):
         # monkey patch white list setting
@@ -52,7 +52,7 @@ class TaskTest(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEqual(
             response.json(),
-            {'email': ['email address not in white list']},
+            {"email": ["email address not in white list"]},
         )
         self.assertEqual(len(mail.outbox), 0)
 
@@ -66,8 +66,8 @@ class TaskTest(APITestCase):
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         json = response.json()
-        self.assertEqual(list(json.keys()), ['email', 'token'])
-        self.assertEqual(json['email'], 'a@a.com')
+        self.assertEqual(list(json.keys()), ["email", "token"])
+        self.assertEqual(json["email"], "a@a.com")
 
     def test_invalid_login_token(self):
         response = self.client.post(
@@ -79,7 +79,7 @@ class TaskTest(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEqual(
             response.json(),
-            {'token': ["The token you entered isn't valid."]},
+            {"token": ["The token you entered isn't valid."]},
         )
 
     @patch.dict(os.environ, {"EMAIL_TEST_ACCOUNT_a_at_a_com": "123456"})
@@ -89,7 +89,7 @@ class TaskTest(APITestCase):
             {"email": "a@a.com", "token": "123456"},
             format="json",
         )
-        token = response.json()['token']
+        token = response.json()["token"]
 
         response = self.client.post(
             reverse("verify_jwt_token"),
@@ -99,13 +99,17 @@ class TaskTest(APITestCase):
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         json = response.json()
-        self.assertEqual(list(json.keys()), ['email', 'exp'])
-        self.assertEqual(json['email'], 'a@a.com')
+        self.assertEqual(list(json.keys()), ["email", "exp"])
+        self.assertEqual(json["email"], "a@a.com")
 
     def test_invalid_jwt_token(self):
         response = self.client.post(
             reverse("verify_jwt_token"),
-            {"token": 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwiZW1haWwiOiJhQGEuY29tIiwiaWF0IjoxNTE2MjM5MDIyfQ.mmqUsu7kpT7M9QUYj69X1TNVCyatAPgky9JXtrSuHrU'},
+            {
+                "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9."
+                "eyJzdWIiOiIxMjM0NTY3ODkwIiwiZW1haWwiOiJhQGEuY29tIiwiaWF0IjoxNTE2MjM5MDIyfQ."
+                "mmqUsu7kpT7M9QUYj69X1TNVCyatAPgky9JXtrSuHrU",
+            },
             format="json",
         )
 
@@ -114,7 +118,7 @@ class TaskTest(APITestCase):
     def test_wrong_format_jwt_token(self):
         response = self.client.post(
             reverse("verify_jwt_token"),
-            {"token": 'abc'},
+            {"token": "abc"},
             format="json",
         )
 
@@ -139,3 +143,29 @@ class TaskTest(APITestCase):
         json = response.json()
         self.assertEqual(list(json.keys()), ["email", "exp"])
         self.assertEqual(json["email"], "a@a.com")
+
+    def test_invalid_jwt_token_header(self):
+        response = self.client.post(
+            reverse("verify_jwt_token_header"),
+            HTTP_AUTHORIZATION="Bearer badbeef",
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+    def test_wrong_format_jwt_token_header(self):
+        response = self.client.post(
+            reverse("verify_jwt_token_header"),
+            HTTP_AUTHORIZATION="badbeef",
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+    def test_missing_jwt_token_header(self):
+        response = self.client.post(
+            reverse("verify_jwt_token_header"),
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
