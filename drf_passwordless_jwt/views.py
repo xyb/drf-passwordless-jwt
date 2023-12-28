@@ -108,7 +108,7 @@ class VerifyJWTHeaderView(APIView):
                 data={"error": "Invalid Authorization header format"},
             )
 
-        email = request.headers.get("email")
+        email = request.headers.get("x-email")
         if email and exists_test_account(email):
             return Response(
                 {

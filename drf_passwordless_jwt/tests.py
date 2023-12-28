@@ -176,7 +176,7 @@ class TaskTest(APITestCase):
         response = self.client.post(
             reverse("verify_jwt_token_header"),
             HTTP_AUTHORIZATION="Bearer anything",
-            HTTP_EMAIL="a@a.com",
+            HTTP_X_EMAIL="a@a.com",
             format="json",
         )
 
