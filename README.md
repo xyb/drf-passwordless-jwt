@@ -61,10 +61,10 @@ All configurations can be set via environment variables.
 The following are the configured default values:
 
 ```python
-# 0: production, 1: devlopment
+# 0: production, 1: development
 DJANGO_DEBUG = 1
 
-# specify hosts seperated by commas
+# specify hosts separated by commas
 DJANGO_ALLOWED_HOSTS = '*'
 
 # 1: print email to screen, not sending

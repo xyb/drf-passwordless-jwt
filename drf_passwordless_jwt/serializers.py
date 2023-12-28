@@ -1,9 +1,8 @@
+import jwt
 from django.conf import settings
 from django.core.validators import RegexValidator
 from drfpasswordless.serializers import EmailAuthSerializer
 from rest_framework import serializers
-
-import jwt
 
 from .utils import decode_jwt
 

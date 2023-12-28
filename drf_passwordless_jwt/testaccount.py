@@ -1,9 +1,11 @@
-from django.conf import settings
 from os import getenv
 
+from django.conf import settings
+
+
 def get_test_account_token(email):
-    name = email.replace('@', '_at_').replace('.', '_')
-    env = '{}{}'.format(settings.EMAIL_TEST_ACCOUNT_PREFIX, name)
+    name = email.replace("@", "_at_").replace(".", "_")
+    env = f"{settings.EMAIL_TEST_ACCOUNT_PREFIX}{name}"
     return getenv(env)
 
 
