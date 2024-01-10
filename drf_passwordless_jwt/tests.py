@@ -160,7 +160,7 @@ class TaskTest(APITestCase):
         )
         token = response.json()["token"]
 
-        response = self.client.post(
+        response = self.client.get(
             reverse("verify_jwt_token_header"),
             HTTP_AUTHORIZATION=f"Bearer {token}",
             format="json",
@@ -173,7 +173,7 @@ class TaskTest(APITestCase):
 
     @patch.dict(os.environ, {"EMAIL_TEST_ACCOUNT_a_at_a_com": "123456"})
     def test_verify_jwt_token_header_test_account(self):
-        response = self.client.post(
+        response = self.client.get(
             reverse("verify_jwt_token_header"),
             HTTP_AUTHORIZATION="Bearer anything",
             HTTP_X_EMAIL="a@a.com",
@@ -186,7 +186,7 @@ class TaskTest(APITestCase):
         self.assertEqual(json["email"], "a@a.com")
 
     def test_invalid_jwt_token_header(self):
-        response = self.client.post(
+        response = self.client.get(
             reverse("verify_jwt_token_header"),
             HTTP_AUTHORIZATION="Bearer badbeef",
             format="json",
@@ -195,7 +195,7 @@ class TaskTest(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
     def test_wrong_format_jwt_token_header(self):
-        response = self.client.post(
+        response = self.client.get(
             reverse("verify_jwt_token_header"),
             HTTP_AUTHORIZATION="badbeef",
             format="json",
@@ -204,7 +204,7 @@ class TaskTest(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
     def test_missing_jwt_token_header(self):
-        response = self.client.post(
+        response = self.client.get(
             reverse("verify_jwt_token_header"),
             format="json",
         )
