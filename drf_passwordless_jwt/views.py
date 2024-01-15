@@ -91,7 +91,11 @@ class VerifyJWTHeaderView(APIView):
     permission_classes = [AllowAny]
     serializer_class = JWTSerializer
 
-    def post(self, request, *args, **kwargs):
+    def get(self, request, *args, **kwargs):
+        request_method = request.headers.get("X-Forwarded-Method")
+        if request_method == "OPTIONS":
+            return Response(status=status.HTTP_200_OK)
+
         authorization_header = request.headers.get("Authorization")
 
         if not authorization_header:
