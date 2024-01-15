@@ -1,5 +1,8 @@
 # drf-passwordless-jwt
 
+[![Test Status](https://github.com/xyb/drf-passwordless-jwt/actions/workflows/test.yml/badge.svg)](https://github.com/xyb/drf-passwordless-jwt/actions/workflows/test.yml)
+[![Test Coverage](https://api.codeclimate.com/v1/badges/246f7e7b16bb43588638/test_coverage)](https://codeclimate.com/github/xyb/drf-passwordless-jwt/test_coverage)
+
 `drf-passwordless-jwt` is a RESTful API service that offers passwordless
 authentication using JWT. In other words, it's a Single Sign-On (SSO)
 service that allows users to log in without using a password.
