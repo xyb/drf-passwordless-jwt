@@ -1,4 +1,5 @@
 from datetime import timedelta
+import re
 
 from django.conf import settings
 from django.utils import timezone
@@ -93,19 +94,33 @@ class VerifyJWTHeaderView(APIView):
 
     def get(self, request, *args, **kwargs):
         request_method = request.headers.get("X-Forwarded-Method")
+
         if request_method == "OPTIONS":
             return Response(status=status.HTTP_200_OK)
 
         authorization_header = request.headers.get("Authorization")
 
-        if not authorization_header:
+        authorization_cookie = ""
+        cookies = request.headers.get("Cookie")
+        if cookies and 'Authorization' in cookies:
+            match = re.search(r'Authorization=([^;]+)', cookies)
+            if match:
+                authorization_cookie = match.group(1)
+
+        if not authorization_header and not authorization_cookie:
             return Response(
                 status=status.HTTP_401_UNAUTHORIZED,
                 data={"error": "Authorization header must be provided"},
             )
 
+        authorization = ""
+        if authorization_cookie:
+            authorization = authorization_cookie
+        if authorization_header:
+            authorization = authorization_header
+
         try:
-            _, token = authorization_header.split()
+            _, token = authorization.split()
         except ValueError:
             return Response(
                 status=status.HTTP_401_UNAUTHORIZED,
