@@ -1,7 +1,8 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
+sed -i "s/--workers [[:digit:]]* /--workers ${WORKERS:-2} /" /etc/supervisor/conf.d/app.conf
+
+cd /app/
 python manage.py migrate
 python manage.py collectstatic --noinput
-python manage.py runserver 0.0.0.0:8000 &
-wait -n
-exit $?
+supervisord --nodaemon -c /etc/supervisor/supervisord.conf
