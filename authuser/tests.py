@@ -1,8 +1,8 @@
 import pytest
-from django.contrib.auth.models import User as DjangoUser
+from django.contrib.auth import get_user_model
 from django.test import TestCase
 
-from .models import User
+User = get_user_model()
 
 
 class UserManagerTestCase(TestCase):
@@ -19,11 +19,5 @@ class UserManagerTestCase(TestCase):
 
     def test_create_super_user(self):
         user = User.objects.create_superuser("xyb@test.com", "password")
-
-        self.assertTrue(isinstance(user, User))
-
-    @pytest.mark.xfail
-    def test_create_user_django(self):
-        user = DjangoUser.objects.create_user("xyb@test.com", "password")
 
         self.assertTrue(isinstance(user, User))
