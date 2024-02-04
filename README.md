@@ -35,6 +35,11 @@ $ curl -X POST -d "token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6Inh5Yk
 $ curl -X GET -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6Inh5YkB0ZXN0LmNvbSIsImV4cCI6MTY3NTI2Njg0NH0.a7RgJLEbeFSQeFZ93qjC2iHo_wabglwzBZ9fe9D-rfw" \
   localhost:8000/auth/header/
 {"email":"xyb@test.com","exp":"2023-02-01T15:54:04Z"}
+
+# or verify via http cookie
+$ curl -X GET --cookie "Authorization=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6Inh5YkB0ZXN0LmNvbSIsImV4cCI6MTY3NTI2Njg0NH0.a7RgJLEbeFSQeFZ93qjC2iHo_wabglwzBZ9fe9D-rfw" \
+  localhost:8000/auth/header/
+{"email":"xyb@test.com","exp":"2023-02-01T15:54:04Z"}
 ```
 
 It uses [Django REST framework](https://www.django-rest-framework.org/),
@@ -93,6 +98,14 @@ OTP_EMAIL_PLAINTEXT = 'Enter this code to sign in: %s'
 # email html message template file
 # set it to 'passwordless_zh_token_email.html' to use the built-in Chinese template.
 OTP_EMAIL_HTML = 'passwordless_token_email.html'
+
+# the http header name if you like to pass token via http header
+# it's useful when setup this as a forward auth service
+# for API gateway like using APISIX forward-auth plugin.
+AUTH_HEADER_NAME = 'Authorization'
+
+# verify via http cookie name as a forward auth service
+AUTH_COOKIE_NAME = 'Authorization'
 
 # 1: ssl smtp
 EMAIL_USE_SSL = 0
