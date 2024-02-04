@@ -92,8 +92,8 @@ class VerifyJWTHeaderView(APIView):
     serializer_class = JWTSerializer
 
     def get(self, request, *args, **kwargs):
-        request_method = request.headers.get("X-Forwarded-Method")
-        if request_method == "OPTIONS":
+        request_method = request.headers.get("X-Forwarded-Method", "")
+        if request_method.upper() == "OPTIONS":
             return Response(status=status.HTTP_200_OK)
 
         email = request.headers.get("x-email")

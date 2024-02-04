@@ -231,6 +231,16 @@ class TaskTest(APITestCase):
         self.assertEqual(list(json.keys()), ["email", "exp"])
         self.assertEqual(json["email"], "a@a.com")
 
+    def test_dont_verify_method_options(self):
+        response = self.client.get(
+            reverse("verify_jwt_token_header"),
+            HTTP_X_FORWARDED_METHOD="OPTIONS",
+            HTTP_AUTHORIZATION="badbeef",
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
     @override_settings(EMAIL_BACKEND="django.core.mail.backends.locmem.EmailBackend")
     def test_obtain_jwt(self):
         response = self.client.post(
