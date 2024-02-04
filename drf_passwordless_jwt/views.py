@@ -1,5 +1,4 @@
 from datetime import timedelta
-import re
 
 from django.conf import settings
 from django.utils import timezone
@@ -93,39 +92,9 @@ class VerifyJWTHeaderView(APIView):
     serializer_class = JWTSerializer
 
     def get(self, request, *args, **kwargs):
-        request_method = request.headers.get("X-Forwarded-Method")
-
-        if request_method == "OPTIONS":
+        request_method = request.headers.get("X-Forwarded-Method", "")
+        if request_method.upper() == "OPTIONS":
             return Response(status=status.HTTP_200_OK)
-
-        authorization_header = request.headers.get("Authorization")
-
-        authorization_cookie = ""
-        cookies = request.headers.get("Cookie")
-        if cookies and 'Authorization' in cookies:
-            match = re.search(r'Authorization=([^;]+)', cookies)
-            if match:
-                authorization_cookie = match.group(1)
-
-        if not authorization_header and not authorization_cookie:
-            return Response(
-                status=status.HTTP_401_UNAUTHORIZED,
-                data={"error": "Authorization header must be provided"},
-            )
-
-        authorization = ""
-        if authorization_cookie:
-            authorization = authorization_cookie
-        if authorization_header:
-            authorization = authorization_header
-
-        try:
-            _, token = authorization.split()
-        except ValueError:
-            return Response(
-                status=status.HTTP_401_UNAUTHORIZED,
-                data={"error": "Invalid Authorization header format"},
-            )
 
         email = request.headers.get("x-email")
         if email and exists_test_account(email):
@@ -133,6 +102,33 @@ class VerifyJWTHeaderView(APIView):
                 {
                     "email": email,
                     "exp": LONG_LIVE_TIME,
+                },
+            )
+
+        auth_header = request.headers.get(settings.AUTH_HEADER_NAME)
+        request.headers.get("Cookie")
+        auth_cookie = request.COOKIES.get(settings.AUTH_COOKIE_NAME, "")
+        if auth_header:
+            try:
+                _, token = auth_header.split()
+            except ValueError:
+                return Response(
+                    status=status.HTTP_401_UNAUTHORIZED,
+                    data={
+                        "error": "Invalid request,"
+                        f" header {settings.AUTH_HEADER_NAME!r}"
+                        f" must be provided",
+                    },
+                )
+        elif auth_cookie:
+            token = auth_cookie
+        else:
+            return Response(
+                status=status.HTTP_401_UNAUTHORIZED,
+                data={
+                    "error": f"header {settings.AUTH_HEADER_NAME!r} or"
+                    f" cookie {settings.AUTH_COOKIE_NAME!r}"
+                    "must be provided",
                 },
             )
 

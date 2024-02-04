@@ -211,6 +211,36 @@ class TaskTest(APITestCase):
 
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
+    @patch.dict(os.environ, {"EMAIL_TEST_ACCOUNT_a_at_a_com": "123456"})
+    def test_verify_jwt_token_cookie(self):
+        response = self.client.post(
+            reverse("auth_jwt_token"),
+            {"email": "a@a.com", "token": "123456"},
+            format="json",
+        )
+        token = response.json()["token"]
+        self.client.cookies.load({"Authorization": token})
+
+        response = self.client.get(
+            reverse("verify_jwt_token_header"),
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        json = response.json()
+        self.assertEqual(list(json.keys()), ["email", "exp"])
+        self.assertEqual(json["email"], "a@a.com")
+
+    def test_dont_verify_method_options(self):
+        response = self.client.get(
+            reverse("verify_jwt_token_header"),
+            HTTP_X_FORWARDED_METHOD="OPTIONS",
+            HTTP_AUTHORIZATION="badbeef",
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
     @override_settings(EMAIL_BACKEND="django.core.mail.backends.locmem.EmailBackend")
     def test_obtain_jwt(self):
         response = self.client.post(

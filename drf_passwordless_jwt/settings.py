@@ -82,6 +82,9 @@ OTP_TOKEN_CLEAN_SECONDS = int(getenv("OTP_TOKEN_CLEAN_SECONDS", 3600 * 24 * 30))
 JWT_EXPIRE_SECONDS = int(getenv("JWT_EXPIRE_SECONDS", 3600 * 24 * 30))
 JWT_SECRET = getenv("JWT_SECRET", "a long long secret string")
 
+AUTH_HEADER_NAME = getenv("AUTH_HEADER_NAME", "Authorization")
+AUTH_COOKIE_NAME = getenv("AUTH_COOKIE_NAME", "Authorization")
+
 if getenv("EMAIL_BACKEND_TEST"):
     EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
 else:
