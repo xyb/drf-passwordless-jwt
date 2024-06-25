@@ -84,7 +84,10 @@ class VerifyJWTView(APIView):
                 status=status.HTTP_200_OK,
             )
 
-        return Response(status=status.HTTP_401_UNAUTHORIZED)
+        return Response(
+            status=status.HTTP_401_UNAUTHORIZED,
+            headers={"Access-Control-Allow-Origin": "*"},
+        )
 
 
 class VerifyJWTHeaderView(APIView):
@@ -119,6 +122,7 @@ class VerifyJWTHeaderView(APIView):
                         f" header {settings.AUTH_HEADER_NAME!r}"
                         f" must be provided",
                     },
+                    headers={"Access-Control-Allow-Origin": "*"},
                 )
         elif auth_cookie:
             token = auth_cookie
@@ -130,6 +134,7 @@ class VerifyJWTHeaderView(APIView):
                     f" cookie {settings.AUTH_COOKIE_NAME!r}"
                     "must be provided",
                 },
+                headers={"Access-Control-Allow-Origin": "*"},
             )
 
         serializer = self.serializer_class(
@@ -142,4 +147,7 @@ class VerifyJWTHeaderView(APIView):
                 status=status.HTTP_200_OK,
             )
 
-        return Response(status=status.HTTP_401_UNAUTHORIZED)
+        return Response(
+            status=status.HTTP_401_UNAUTHORIZED,
+            headers={"Access-Control-Allow-Origin": "*"},
+        )

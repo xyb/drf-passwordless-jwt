@@ -141,6 +141,7 @@ class TaskTest(APITestCase):
         )
 
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+        self.assertEqual(response.headers["Access-Control-Allow-Origin"], "*")
 
     def test_wrong_format_jwt_token(self):
         response = self.client.post(
@@ -150,6 +151,7 @@ class TaskTest(APITestCase):
         )
 
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+        self.assertEqual(response.headers["Access-Control-Allow-Origin"], "*")
 
     @patch.dict(os.environ, {"EMAIL_TEST_ACCOUNT_a_at_a_com": "123456"})
     def test_verify_jwt_token_header(self):
@@ -193,6 +195,7 @@ class TaskTest(APITestCase):
         )
 
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+        self.assertEqual(response.headers["Access-Control-Allow-Origin"], "*")
 
     def test_wrong_format_jwt_token_header(self):
         response = self.client.get(
@@ -202,6 +205,7 @@ class TaskTest(APITestCase):
         )
 
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+        self.assertEqual(response.headers["Access-Control-Allow-Origin"], "*")
 
     def test_missing_jwt_token_header(self):
         response = self.client.get(
@@ -210,6 +214,7 @@ class TaskTest(APITestCase):
         )
 
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+        self.assertEqual(response.headers["Access-Control-Allow-Origin"], "*")
 
     @patch.dict(os.environ, {"EMAIL_TEST_ACCOUNT_a_at_a_com": "123456"})
     def test_verify_jwt_token_cookie(self):
