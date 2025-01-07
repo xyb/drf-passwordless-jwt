@@ -84,7 +84,7 @@ DJANGO_ALLOWED_HOSTS = '*'
 EMAIL_BACKEND_TEST = 0
 
 # email from
-OTP_EMAIL_ADDRESS = 'xyb@mydomain.com'
+OTP_EMAIL_ADDRESS = 'No Reply <xyb@mydomain.com>'
 
 # token expire time, default 5 minutes
 OTP_TOKEN_EXPIRE_SECONDS = 300
@@ -184,7 +184,7 @@ services:
       - TZ=Asia/Hong_Kong
       - DJANGO_SECRET_KEY=secret-string
       - DJANGO_DEBUG=0
-      - OTP_EMAIL_ADDRESS=xyb@mydomain.com
+      - OTP_EMAIL_ADDRESS="No Reply <xyb@mydomain.com>"
       - OTP_TOKEN_EXPIRE_SECONDS=300
       - OTP_EMAIL_SUBJECT=Your Login Token
       - OTP_EMAIL_PLAINTEXT=Enter this code to sign in: %s

@@ -63,7 +63,7 @@ PASSWORDLESS_AUTH = {
     "PASSWORDLESS_AUTH_TYPES": ["EMAIL"],
     "PASSWORDLESS_EMAIL_NOREPLY_ADDRESS": getenv(
         "OTP_EMAIL_ADDRESS",
-        "xyb@mydomain.com",
+        "No Reply <xyb@mydomain.com>",
     ),
     "PASSWORDLESS_TOKEN_EXPIRE_TIME": int(getenv("OTP_TOKEN_EXPIRE_SECONDS", 5 * 60)),
 }
